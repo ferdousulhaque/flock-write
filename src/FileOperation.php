@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Ferdous\FileLockWrite;
 
+use function PHPUnit\Framework\isType;
+
 class FileOperation
 {
     /**
@@ -20,10 +22,15 @@ class FileOperation
      * @param string $filepath
      * @param string $filename
      * @param LockService $lockService
+     * @param string $data
      */
     public function __construct($filepath, $filename, private LockService $lockService, $data = "")
     {
         $this->filepath = $filepath . '/' . $filename;
+        if (is_array($data)) {
+            $data = json_encode($data);
+        }
+
         $this->data = $data;
     }
 
@@ -46,8 +53,20 @@ class FileOperation
     {
         $fp = $this->lockService->lockFile($this->filepath, 'a');
         // sleep(20);
-        fputs($fp, $this->data);
+        fputs($fp, strval($this->data));
         fflush($fp);  // flush output before releasing the lock
         $this->lockService->releaseFile();
+    }
+
+    /**
+     *
+     * @return string
+     */
+    public function readDataFromFile(): string
+    {
+        $this->lockService->lockFile($this->filepath, 'r+');
+        $lines = file_get_contents($this->filepath);
+        $this->lockService->releaseFile();
+        return $lines;
     }
 }

@@ -12,9 +12,11 @@ use Ferdous\FileLockWrite\LockService;
 
 $filename = 'reporting.csv';
 $filepath = realpath('./storage');
-$data = '1,100,200,w300';
+$data = '1,100,200,w300' . PHP_EOL;
 
 $lockService = new LockService();
 $opObj = new FileOperation($filepath, $filename,  $lockService, $data);
 // $opObj->truncateFile();
 $opObj->writeDataToFileAppend();
+
+echo $opObj->readDataFromFile();
