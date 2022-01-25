@@ -6,29 +6,47 @@ use Ferdous\FileLockWrite\LockService;
 
 class LockTest extends TestCase
 {
+    private $lockService;
+
+    /**
+     *
+     * @return void
+     */
+    public function setUp(): void
+    {
+        $this->lockService = new LockService();
+    }
+
     /**
      * @dataProvider dataProviderForLock
      */
-    public function testLock(string $filename, string $filepath, $actual, $expected): void
+    public function testLock(string $filename, string $filepath, $firstData, $secondData, $expected): void
     {
-        // $lockService = new LockService();
-        // $opObj = new FileOperation($filepath, $filename,  $lockService, $expected);
-        // // $opObj->truncateFile();
-        // $opObj->writeDataToFileAppend();
-        // $actual = $opObj->readDataFromFile();
-        // if (is_array($expected)) {
-        //     $expected = json_encode($expected);
-        // }
-        // $this->assertEquals($expected, $actual);
-        // $opObj->truncateFile();
-        $this->assertTrue(true);
+        $this->writeWithSleep($filename, $filepath, $firstData);
+        $this->writeWithoutSleep($filename, $filepath, $secondData);
+        $opObj = new FileOperation($filepath, $filename,  $this->lockService);
+        $actual = $opObj->readDataFromFile();
+        $this->assertEquals($expected, $actual);
+    }
+
+    private function writeWithSleep(string $filename, string $filepath, $data)
+    {
+        $opObj = new FileOperation($filepath, $filename,  $this->lockService, $data);
+        $opObj->truncateFile();
+        $opObj->writeDataToFileAppend(3);
+    }
+
+    private function writeWithoutSleep(string $filename, string $filepath, $data)
+    {
+        $opObj = new FileOperation($filepath, $filename,  $this->lockService, $data);
+        $opObj->writeDataToFileAppend();
     }
 
     public function dataProviderForLock(): array
     {
         $filepath = realpath('./storage');
         return [
-            ['test.csv', $filepath, [], '[]', 'test', 'test'],
+            ['lock.csv', $filepath, '-firstData/', '-secondData/', '-firstData/-secondData/'],
         ];
     }
 }

@@ -6,14 +6,23 @@ use Ferdous\FileLockWrite\LockService;
 
 class WriteTest extends TestCase
 {
+    private $lockService;
+
+    /**
+     *
+     * @return void
+     */
+    public function setUp(): void
+    {
+        $this->lockService = new LockService();
+    }
+
     /**
      * @dataProvider dataProviderForWrite
      */
     public function testWrite(string $filename, string $filepath, $actual, $expected): void
     {
-        $lockService = new LockService();
-        $opObj = new FileOperation($filepath, $filename,  $lockService, $expected);
-        // $opObj->truncateFile();
+        $opObj = new FileOperation($filepath, $filename,  $this->lockService, $expected);
         $opObj->writeDataToFileAppend();
         $actual = $opObj->readDataFromFile();
         if (is_array($expected)) {

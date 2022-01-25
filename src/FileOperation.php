@@ -49,10 +49,10 @@ class FileOperation
      *
      * @return void
      */
-    public function writeDataToFileAppend(): void
+    public function writeDataToFileAppend($sleep = 0): void
     {
         $fp = $this->lockService->lockFile($this->filepath, 'a');
-        // sleep(20);
+        sleep($sleep);
         fputs($fp, strval($this->data));
         fflush($fp);  // flush output before releasing the lock
         $this->lockService->releaseFile();
