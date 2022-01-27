@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Ferdous\FileLockWrite;
 
-use function PHPUnit\Framework\isType;
-
 class FileOperation
 {
     /**

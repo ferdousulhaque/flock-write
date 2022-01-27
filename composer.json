@@ -1,5 +1,5 @@
 {
-    "name": "ferdous/file-lock-write",
+    "name": "ferdous/flock-write",
     "description": "This is a library for File lock write operation in a single shared storage",
     "type": "library",
     "license": "MIT",
